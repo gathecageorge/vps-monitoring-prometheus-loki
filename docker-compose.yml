@@ -20,7 +20,9 @@ services:
     <<: *logging
     image: grafana/grafana:latest
     container_name: grafana
+    #user: root
     volumes:
+      #- /etc/machine-id:/etc/machine-id:ro
       - grafana_data:/var/lib/grafana
       - ./grafana/provisioning/:/etc/grafana/provisioning/
       #- /etc/letsencrypt/live/<domain-name>/cert.pem:/ssl/cert.pem:ro
