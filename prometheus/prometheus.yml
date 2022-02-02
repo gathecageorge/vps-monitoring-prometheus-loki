@@ -1,0 +1,17 @@
+global:
+  scrape_interval: 5s
+  evaluation_interval: 5s
+
+scrape_configs:
+  - job_name: prometheus
+    scrape_interval: 5s
+    static_configs:
+      - targets: 
+        - 'localhost:9090'
+        labels:
+          instance: 'prometheus'
+
+    file_sd_configs:
+      - files:
+          - "/etc/prometheus/file_sd/*.yml"
+

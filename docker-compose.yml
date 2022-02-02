@@ -1,0 +1,114 @@
+version: '3'
+
+networks:
+  vps_monitoring: {}
+
+volumes:
+  grafana_data: {}
+  prometheus_data: {}
+  loki_data: {}
+  promtail_data: {}
+
+x-logging: &logging
+  logging:
+    driver: 'json-file'
+    options: 
+      tag: '{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}'
+
+services:
+  grafana:
+    <<: *logging
+    image: grafana/grafana:latest
+    container_name: grafana
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning/:/etc/grafana/provisioning/
+    environment:
+      - GF_SECURITY_ADMIN_USER=${ADMIN_USER:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${ADMIN_PASSWORD:-foobar}
+      - GF_USERS_ALLOW_SIGN_UP=false
+    restart: unless-stopped
+    ports:
+      - 3000:3000
+    networks:
+      - vps_monitoring
+    depends_on:
+      - prometheus
+      - loki
+
+  node-exporter:
+    <<: *logging
+    image: prom/node-exporter:latest
+    container_name: node-exporter
+    user: root
+    ports:
+      - 9100:9100
+    volumes:
+      - /etc/machine-id:/etc/machine-id:ro
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.rootfs=/rootfs'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.ignored-mount-points=^/(sys|proc|dev|host|etc)($$|/)'
+    restart: unless-stopped
+    networks:
+      - vps_monitoring
+
+  prometheus:
+    <<: *logging
+    image: prom/prometheus:latest
+    container_name: prometheus
+    user: root
+    ports:
+      - 9090:9090
+    volumes:
+      - ./prometheus:/etc/prometheus
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    networks:
+      - vps_monitoring
+    restart: unless-stopped
+    depends_on:
+      - node-exporter
+
+  promtail:
+    <<: *logging
+    image: grafana/promtail:latest
+    container_name: promtail
+    user: root
+    ports:
+      - 9080:9080
+      - 9081:9081
+    volumes:
+      - /etc/machine-id:/etc/machine-id:ro
+      - ./promtail:/etc/promtail
+      - promtail_data:/tmp
+      - /var/log:/var/log:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+    command:
+      - '--config.file=/etc/promtail/promtail.yml'
+    networks:
+      - vps_monitoring
+    restart: unless-stopped
+    depends_on:
+      - loki
+
+  loki:
+    <<: *logging
+    image: grafana/loki:latest
+    container_name: loki
+    ports:
+      - 3100:3100
+      - 9096:9096
+    volumes:
+      - loki_data:/tmp
+      - ./loki:/etc/loki
+    command:
+      - '--config.file=/etc/loki/loki.yml'
+    networks:
+      - vps_monitoring
+    restart: unless-stopped
