@@ -27,3 +27,36 @@ If you want ssl enabled, modify docker compose by uncommenting the lines below
 
       ........
 ```
+
+## NOTE
+For the docker compose stack to pickup containers running in docker, you will need to run the container using `json-file` docker driver. 
+
+If you are using docker compose add the following to the top of the compose file.
+
+````
+x-logging: &logging
+  logging:
+    driver: 'json-file'
+    options: 
+      tag: '{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}'
+
+````
+
+Then for each service in your compose file you can use this logging method. This is good to avoid duplication:
+
+```
+services:
+  grafana:
+    <<: *logging
+    image: grafana/grafana:latest
+    container_name: grafana
+    #.........other options for the service
+```
+
+If you are running a container manually using docker run command specify the log options like below. 
+
+`docker run -d --name randomlogger --log-driver json-file --log-opt tag="{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}" chentex/random-logger:latest 100 400`
+
+
+This will run a random log generator generating logs randomly one for each time between 100 and 400 milliseconds. Read more about random log image from the owners github page
+[https://github.com/chentex/random-logger](https://github.com/chentex/random-logger)
