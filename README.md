@@ -31,6 +31,17 @@ If you want ssl enabled, modify docker compose by uncommenting the lines below
 ## NOTE
 For the docker compose stack to pickup containers running in docker, you will need to run the container using `json-file` docker driver. 
 
+You can set docker to use this driver automatically for all started containers by adding the configuration below to `/etc/docker/daemon.json` file:
+
+```
+{
+    "log-driver": "json-file",
+    "log-opts": {
+        "tag": "{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}"
+    }
+}
+```
+
 If you are using docker compose add the following to the top of the compose file.
 
 ````
