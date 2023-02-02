@@ -20,20 +20,14 @@ services:
     <<: *logging
     image: grafana/grafana:latest
     container_name: grafana
-    #user: root
     volumes:
-      #- /etc/machine-id:/etc/machine-id:ro
       - grafana_data:/var/lib/grafana
       - ./grafana/provisioning/:/etc/grafana/provisioning/
-      #- /etc/letsencrypt/live/<domain-name>/cert.pem:/ssl/cert.pem:ro
-      #- /etc/letsencrypt/live/<domain-name>/privkey.pem:/ssl/privkey.pem:ro
     environment:
-      #- GF_SERVER_PROTOCOL=https
-      #- GF_SERVER_CERT_FILE=/ssl/cert.pem
-      #- GF_SERVER_CERT_KEY=/ssl/privkey.pem
-
-      - GF_SECURITY_ADMIN_USER=${ADMIN_USER:-admin}
-      - GF_SECURITY_ADMIN_PASSWORD=${ADMIN_PASSWORD:-foobar}
+      - GF_SERVER_DOMAIN=${DOMAIN}
+      - GF_SERVER_ROOT_URL=%(protocol)s://${DOMAIN}
+      - GF_SECURITY_ADMIN_USER=${ADMIN_USER}
+      - GF_SECURITY_ADMIN_PASSWORD=${ADMIN_PASSWORD}
       - GF_USERS_ALLOW_SIGN_UP=false
     restart: unless-stopped
     ports:
