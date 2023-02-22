@@ -8,6 +8,7 @@ volumes:
   prometheus_data: {}
   loki_data: {}
   promtail_data: {}
+  portainer_data: {}
 
 x-logging: &logging
   logging:
@@ -16,6 +17,18 @@ x-logging: &logging
       tag: '{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}'
 
 services:
+  portainer:
+    <<: *logging
+    image: portainer/portainer-ee:latest
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+    ports:
+      - 8000:8000
+      - 9443:9443
+      - 9000:9000
+
   grafana:
     <<: *logging
     image: grafana/grafana:latest
