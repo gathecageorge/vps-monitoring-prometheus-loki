@@ -18,7 +18,7 @@ x-logging: &logging
 
 services:
   portainer:
-    image: portainer/portainer-ee:latest
+    image: portainer/portainer-ce:latest
     container_name: portainer
     restart: always
     volumes:
