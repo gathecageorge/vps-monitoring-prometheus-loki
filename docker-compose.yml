@@ -18,8 +18,8 @@ x-logging: &logging
 
 services:
   portainer:
-    <<: *logging
     image: portainer/portainer-ee:latest
+    container_name: portainer
     restart: always
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
