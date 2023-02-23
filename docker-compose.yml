@@ -26,8 +26,8 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - portainer_data:/data
     ports:
-      - 8000:8000
-      - 9443:9443
+      # - 8000:8000
+      # - 9443:9443
       - 9000:9000
 
   grafana:
@@ -38,10 +38,10 @@ services:
       - grafana_data:/var/lib/grafana
       - ./grafana/provisioning/:/etc/grafana/provisioning/
     environment:
-      - GF_SERVER_DOMAIN=${DOMAIN}
-      - GF_SERVER_ROOT_URL=%(protocol)s://${DOMAIN}
-      - GF_SECURITY_ADMIN_USER=${ADMIN_USER}
-      - GF_SECURITY_ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - GF_SERVER_DOMAIN=${GRAFANA_DOMAIN}
+      - GF_SERVER_ROOT_URL=%(protocol)s://${GRAFANA_DOMAIN}
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD}
       - GF_USERS_ALLOW_SIGN_UP=false
     restart: unless-stopped
     ports:
@@ -57,8 +57,8 @@ services:
     image: prom/node-exporter:latest
     container_name: node-exporter
     user: root
-    ports:
-      - 9100:9100
+    # ports:
+    #   - 9100:9100
     volumes:
       - /etc/machine-id:/etc/machine-id:ro
       - /proc:/host/proc:ro
@@ -78,8 +78,8 @@ services:
     image: prom/prometheus:latest
     container_name: prometheus
     user: root
-    ports:
-      - 9090:9090
+    # ports:
+    #   - 9090:9090
     volumes:
       - ./prometheus:/etc/prometheus
       - prometheus_data:/prometheus
@@ -96,9 +96,9 @@ services:
     image: grafana/promtail:latest
     container_name: promtail
     user: root
-    ports:
-      - 9080:9080
-      - 9081:9081
+    # ports:
+    #   - 9080:9080
+    #   - 9081:9081
     volumes:
       - /etc/machine-id:/etc/machine-id:ro
       - ./promtail:/etc/promtail
@@ -117,9 +117,9 @@ services:
     <<: *logging
     image: grafana/loki:latest
     container_name: loki
-    ports:
-      - 3100:3100
-      - 9096:9096
+    # ports:
+    #   - 3100:3100
+    #   - 9096:9096
     volumes:
       - loki_data:/tmp
       - ./loki:/etc/loki
