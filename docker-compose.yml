@@ -19,6 +19,7 @@ x-logging: &logging
 services:
   portainer:
     <<: *logging
+    pull_policy: always
     image: portainer/portainer-ce:latest
     container_name: portainer
     restart: always
@@ -32,6 +33,7 @@ services:
 
   grafana:
     <<: *logging
+    pull_policy: always
     image: grafana/grafana:latest
     container_name: grafana
     volumes:
@@ -54,6 +56,7 @@ services:
 
   node-exporter:
     <<: *logging
+    pull_policy: always
     image: prom/node-exporter:latest
     container_name: node-exporter
     user: root
@@ -75,6 +78,7 @@ services:
 
   prometheus:
     <<: *logging
+    pull_policy: always
     image: prom/prometheus:latest
     container_name: prometheus
     user: root
@@ -93,6 +97,7 @@ services:
 
   promtail:
     <<: *logging
+    pull_policy: always
     image: grafana/promtail:latest
     container_name: promtail
     user: root
@@ -115,6 +120,7 @@ services:
 
   loki:
     <<: *logging
+    pull_policy: always
     image: grafana/loki:latest
     container_name: loki
     # ports:
