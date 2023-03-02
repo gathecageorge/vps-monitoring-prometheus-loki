@@ -18,24 +18,24 @@ x-logging: &logging
       tag: '{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}'
 
 services:
-  init:
-    image: alpine/git:latest
-    container_name: init
-    volumes:
-      - common_data:/workdir
-    # stdin_open: true # docker run -i
-    # tty: true # docker run -t
-    entrypoint:
-      - "/bin/sh"
-      - -ecx
-      - |
-          cd /workdir
-          if [ "$(ls -A /workdir | wc -l)" == "0" ]; then
-            git clone https://github.com/gathecageorge/vps-monitoring-prometheus-loki .
-            cp .env_template .env
-          else
-            echo "Has files already"
-          fi
+  # init:
+  #   image: alpine/git:latest
+  #   container_name: init
+  #   volumes:
+  #     - common_data:/workdir
+  #   # stdin_open: true # docker run -i
+  #   # tty: true # docker run -t
+  #   entrypoint:
+  #     - "/bin/sh"
+  #     - -ecx
+  #     - |
+  #         cd /workdir
+  #         if [ "$(ls -A /workdir | wc -l)" == "0" ]; then
+  #           git clone https://github.com/gathecageorge/vps-monitoring-prometheus-loki .
+  #           cp .env_template .env
+  #         else
+  #           echo "Has files already"
+  #         fi
 
   portainer:
     <<: *logging
