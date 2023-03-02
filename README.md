@@ -10,8 +10,8 @@ If you want domain access enabled, modify .env file and add domain in place of l
 
 ```bash
 GRAFANA_DOMAIN=mydomain.com
-GRAFANA_ADMIN_USER=admin
-GRAFANA_ADMIN_PASSWORD=admin
+GRAFANA_ADMIN_USER=myadmin
+GRAFANA_ADMIN_PASSWORD=myadmin
 ```
 
 ### NB: Portainer access
