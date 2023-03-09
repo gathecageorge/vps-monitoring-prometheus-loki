@@ -1,9 +1,27 @@
-# Setup monitoring on a vps using prometheus/node-exporter/promtail/loki/grafana
+# Setup monitoring on a your server using prometheus/node-exporter/promtail/loki/grafana/portainer
 
 1. Clone this repository to the location you want.
 2. Copy .env_template to .env and add the required changes sample command: `cp .env_template .env`
-3. Run `docker-compose up -d` to start all services. 
-4. Access grafana from the IP of machine and port 3000.
+3. Modify .env as required. Under `COMPOSE_FILE` you can set the services you need deployed. By default its all of them. If you need to remove any of them, just remove its corresponding yml file from list. i.e to remove portainer, them remove `portainer.yml` from the list. Remember to remove the `:`(full collon) separator also.
+    ```bash
+    COMPOSE_PATH_SEPARATOR=:
+    COMPOSE_FILE=grafana.yml:prometheus-metrics.yml:loki-logs.yml:promtail-logs.yml:portainer.yml
+    PROMTAIL_LOKI_PUSH_URL=http://loki:3100/loki/api/v1/push
+    PROMETHEUS_REMOTE_WRITE_URL=none
+
+    GRAFANA_DOMAIN=localhost
+    GRAFANA_ADMIN_USER=myadmin
+    GRAFANA_ADMIN_PASSWORD=mypass
+    ```
+4. Run `docker-compose up -d` to start all services. 
+5. Access grafana from the IP of machine and port 3000.
+
+## NB
+- It is recommended that when running grafana, also run `prometheus-metrics.yml` and `loki-logs.yml` and `promtail-logs.yml`. Otherwise you need to login to grafana and change the prometheus and Loki datasource URLs as required.
+- You can setup prometheus with remote write to another prometheus/mimir/thanos by setting the `PROMETHEUS_REMOTE_WRITE_URL` to the url instead of `none`. In that case you can remove all other compose files except `prometheus-metrics.yml`
+- You can setup loki to remote write to another loki by setting the `PROMTAIL_LOKI_PUSH_URL` to the loki url. ie `http://IP_ADDRESS:3100/loki/api/v1/push` or `http://loki.com/loki/api/v1/push`. In this case you dont need loki setup here, so you can remove all other compose files except `promtail-logs.yml`
+
+---
 
 ### NB: Grafana domain access
 If you want domain access enabled, modify .env file and add domain in place of localhost. Example below

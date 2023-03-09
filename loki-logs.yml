@@ -1,0 +1,31 @@
+version: '3'
+
+networks:
+  vps_monitoring: {}
+
+volumes:
+  loki_data: {}
+
+x-logging: &logging
+  logging:
+    driver: 'json-file'
+    options: 
+      tag: '{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}'
+
+services:
+  loki:
+    <<: *logging
+    pull_policy: always
+    image: grafana/loki:latest
+    container_name: loki
+    # ports:
+    #   - 3100:3100
+    #   - 9096:9096
+    volumes:
+      - loki_data:/tmp
+      - ./loki:/etc/loki
+    command:
+      - '--config.file=/etc/loki/loki.yml'
+    networks:
+      - vps_monitoring
+    restart: unless-stopped

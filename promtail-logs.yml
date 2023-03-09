@@ -1,0 +1,56 @@
+version: '3'
+
+networks:
+  vps_monitoring: {}
+
+volumes:
+  promtail_data: {}
+
+x-logging: &logging
+  logging:
+    driver: 'json-file'
+    options: 
+      tag: '{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}'
+
+services:
+  promtail-init:
+    image: alpine:latest
+    container_name: promtail-init
+    user: 1000:1000
+    environment:
+      - PROMTAIL_LOKI_PUSH_URL=${PROMTAIL_LOKI_PUSH_URL}
+    volumes:
+      - ./promtail:/workdir
+    # stdin_open: true # docker run -i
+    # tty: true # docker run -t
+    entrypoint:
+      - "/bin/sh"
+      - -ecx
+      - |
+          cd /workdir
+          cp promtail-config-template.yml promtail.yml
+          sed -i "s|PROMTAIL_LOKI_PUSH_URL|$PROMTAIL_LOKI_PUSH_URL|" promtail.yml
+
+  promtail:
+    <<: *logging
+    pull_policy: always
+    image: grafana/promtail:latest
+    container_name: promtail
+    user: root
+    # ports:
+    #   - 9080:9080
+    #   - 9081:9081
+    volumes:
+      - /etc/machine-id:/etc/machine-id:ro
+      - ./promtail:/etc/promtail
+      - promtail_data:/tmp
+      - /var/log:/var/log:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+    command:
+      - '--config.file=/etc/promtail/promtail.yml'
+    networks:
+      - vps_monitoring
+    restart: unless-stopped
+    depends_on:
+      promtail-init:
+        condition: service_completed_successfully

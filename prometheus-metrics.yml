@@ -1,0 +1,82 @@
+version: '3'
+
+networks:
+  vps_monitoring: {}
+
+volumes:
+  prometheus_data: {}
+
+x-logging: &logging
+  logging:
+    driver: 'json-file'
+    options: 
+      tag: '{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}'
+
+services:
+  node-exporter:
+    <<: *logging
+    pull_policy: always
+    image: prom/node-exporter:latest
+    container_name: node-exporter
+    user: root
+    # ports:
+    #   - 9100:9100
+    volumes:
+      - /etc/machine-id:/etc/machine-id:ro
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.rootfs=/rootfs'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.ignored-mount-points=^/(sys|proc|dev|host|etc)($$|/)'
+    restart: unless-stopped
+    networks:
+      - vps_monitoring
+
+  prometheus-init:
+    image: alpine:latest
+    container_name: prometheus-init
+    user: 1000:1000
+    environment:
+      - PROMETHEUS_REMOTE_WRITE_URL=${PROMETHEUS_REMOTE_WRITE_URL}
+    volumes:
+      - ./prometheus:/workdir
+    # stdin_open: true # docker run -i
+    # tty: true # docker run -t
+    entrypoint:
+      - "/bin/sh"
+      - -ecx
+      - |
+          cd /workdir
+          cp prometheus-config-template.yml prometheus.yml
+          if [ "$PROMETHEUS_REMOTE_WRITE_URL" != "none" ]; then
+          cat >> prometheus.yml << EOL
+          remote_write:
+            - url: "$PROMETHEUS_REMOTE_WRITE_URL"
+          EOL
+          fi
+
+  prometheus:
+    <<: *logging
+    pull_policy: always
+    image: prom/prometheus:latest
+    container_name: prometheus
+    user: root
+    # ports:
+    #   - 9090:9090
+    volumes:
+      - ./prometheus:/etc/prometheus
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--enable-feature=remote-write-receiver'
+    networks:
+      - vps_monitoring
+    restart: unless-stopped
+    depends_on:
+      node-exporter:
+        condition: service_started
+      prometheus-init:
+        condition: service_completed_successfully

@@ -1,0 +1,28 @@
+version: '3'
+
+networks:
+  vps_monitoring: {}
+
+volumes:
+  portainer_data: {}
+
+x-logging: &logging
+  logging:
+    driver: 'json-file'
+    options: 
+      tag: '{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}'
+
+services:
+  portainer:
+    <<: *logging
+    pull_policy: always
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+    ports:
+      # - 8000:8000
+      # - 9443:9443
+      - 9000:9000

@@ -1,1 +1,3 @@
 .env
+prometheus/prometheus.yml
+promtail/promtail.yml
