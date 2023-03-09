@@ -16,7 +16,7 @@ services:
   promtail-init:
     image: alpine:latest
     container_name: promtail-init
-    user: 1000:1000
+    # user: 1000:1000
     environment:
       - PROMTAIL_LOKI_PUSH_URL=${PROMTAIL_LOKI_PUSH_URL}
     volumes:

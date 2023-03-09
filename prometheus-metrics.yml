@@ -38,7 +38,7 @@ services:
   prometheus-init:
     image: alpine:latest
     container_name: prometheus-init
-    user: 1000:1000
+    # user: 1000:1000
     environment:
       - PROMETHEUS_REMOTE_WRITE_URL=${PROMETHEUS_REMOTE_WRITE_URL}
     volumes:
