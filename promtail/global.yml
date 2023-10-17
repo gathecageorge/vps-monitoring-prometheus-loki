@@ -6,30 +6,14 @@ server:
 positions:
   filename: /tmp/positions.yaml
 
-clients:
-  - url: PROMTAIL_LOKI_PUSH_URL
-
 scrape_configs:
-- job_name: system
-  static_configs:
-  - targets:
-      - localhost
-    labels:
-      job: varlogs
-      __path__: /var/log/*log
-
-  - targets:
-      - localhost
-    labels:
-      job: apache
-      __path__: /var/log/apache2/*log
-
 - job_name: containers
   static_configs:
   - targets:
       - localhost
     labels:
       job: containerlogs
+      server: SERVER_LABEL_HOSTNAME
       __path__: /var/lib/docker/containers/*/*log
 
   pipeline_stages:
@@ -62,3 +46,13 @@ scrape_configs:
   - output:
       source: output
 
+- job_name: system
+  static_configs:
+  - targets:
+      - localhost
+    labels:
+      job: varlogs
+      server: SERVER_LABEL_HOSTNAME
+      __path__: /var/log/*log
+
+clients:

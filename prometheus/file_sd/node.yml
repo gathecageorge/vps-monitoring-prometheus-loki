@@ -1,4 +1,0 @@
-- labels:
-    instance: node-exporter
-  targets:
-  - node-exporter:9100

@@ -1,8 +1,5 @@
 version: '3'
 
-networks:
-  vps_monitoring: {}
-
 volumes:
   grafana_data: {}
 
@@ -15,9 +12,7 @@ x-logging: &logging
 services:
   grafana:
     <<: *logging
-    pull_policy: always
     image: grafana/grafana:latest
-    container_name: grafana
     volumes:
       - grafana_data:/var/lib/grafana
       - ./grafana/provisioning/:/etc/grafana/provisioning/
@@ -30,5 +25,3 @@ services:
     restart: unless-stopped
     ports:
       - 3000:3000
-    networks:
-      - vps_monitoring
