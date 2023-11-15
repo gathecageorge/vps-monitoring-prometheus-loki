@@ -1,7 +1,7 @@
 # Setup monitoring on a your server using prometheus/node-exporter/promtail/loki/grafana/portainer
 
 1. Clone this repository to the location you want.
-2. Copy .env_template to .env and add the required changes sample command: `cp .env_template .env`
+2. Copy `.env_template` to `.env` and add the required changes sample command: `cp .env_template .env`
 3. Modify .env as required. Under `COMPOSE_FILE` you can set the services you need deployed. By default its all of them. If you need to remove any of them, just remove its corresponding yml file from list. i.e to remove portainer, them remove `portainer.yml` from the list. Remember to remove the `:`(full collon) separator also.
 4. Run `docker-compose up -d` to start all services. 
 5. Access grafana from the IP of machine and port 3000.
