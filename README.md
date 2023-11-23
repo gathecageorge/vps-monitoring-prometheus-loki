@@ -28,36 +28,15 @@ If you want to access portainer using ssl, you need to modify port exposed to `9
 
 ## NOTE
 
-For promtail to pick up container logs, you will need to run the container using `json-file` docker driver.
+Promtail uses docker daemon to pick up logs for containers with label "promtail.logs = true".
 
-You can set docker to use this driver automatically for all started containers by adding the configuration below to `/etc/docker/daemon.json` file:
-
-```json
-{
-    "log-driver": "json-file",
-    "log-opts": {
-        "tag": "{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}"
-    }
-}
-```
-
-If you are using docker compose add the following to the top of the compose file.
-
-````yaml
-x-logging: &logging
-  logging:
-    driver: 'json-file'
-    options: 
-      tag: '{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}'
-
-````
-
-Then for each service in your compose file you can use this logging method. This is good to avoid duplication:
+Example when using docker compose:
 
 ```yaml
 services:
   grafana:
-    <<: *logging
+    labels:
+      - promtail.logs=true
     image: grafana/grafana:latest
     container_name: grafana
     #.........other options for the service
@@ -65,7 +44,7 @@ services:
 
 If you are running a container manually using docker run command specify the log options like below. 
 
-`docker run -d --name randomlogger --log-driver json-file --log-opt tag="{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}" chentex/random-logger:latest 100 400`
+`docker run --rm -d --name randomlogger --label promtail.logs=true chentex/random-logger:latest 100 400`
 
 This will run a random log generator generating logs randomly one for each time between 100 and 400 milliseconds. Read more about random log image from the owners github page
 [https://github.com/chentex/random-logger](https://github.com/chentex/random-logger)

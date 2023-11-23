@@ -3,15 +3,8 @@ version: '3.9'
 volumes:
   prometheus_data: {}
 
-x-logging: &logging
-  logging:
-    driver: 'json-file'
-    options: 
-      tag: '{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}'
-
 services:
   node-exporter:
-    <<: *logging
     image: prom/node-exporter:latest
     user: root
     volumes:
@@ -26,6 +19,7 @@ services:
       - '--collector.filesystem.ignored-mount-points=^/(sys|proc|dev|host|etc)($$|/)'
     restart: unless-stopped
     labels:
+      - promtail.logs=true
       - metrics.scrape=true
       - metrics.path=/metrics
       - metrics.port=9100
@@ -42,13 +36,12 @@ services:
     command:
       - --docker_only
     labels:
+      - promtail.logs=true
       - metrics.scrape=true
       - metrics.path=/metrics
       - metrics.port=8080
-    <<: *logging
 
   prometheus:
-    <<: *logging
     image: prom/prometheus:latest
     user: root
     volumes:
@@ -62,3 +55,8 @@ services:
     depends_on:
       - node-exporter
       - cadvisor
+    labels:
+      - promtail.logs=true
+      - metrics.scrape=true
+      - metrics.path=/metrics
+      - metrics.port=9090

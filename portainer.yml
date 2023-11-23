@@ -3,15 +3,8 @@ version: '3'
 volumes:
   portainer_data: {}
 
-x-logging: &logging
-  logging:
-    driver: 'json-file'
-    options: 
-      tag: '{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}'
-
 services:
   portainer:
-    <<: *logging
     image: portainer/portainer-ce:latest
     restart: always
     volumes:
@@ -19,3 +12,5 @@ services:
       - portainer_data:/data
     ports:
       - 9000:9000
+    labels:
+      - promtail.logs=true

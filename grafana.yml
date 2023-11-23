@@ -3,15 +3,8 @@ version: '3'
 volumes:
   grafana_data: {}
 
-x-logging: &logging
-  logging:
-    driver: 'json-file'
-    options: 
-      tag: '{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}'
-
 services:
   grafana:
-    <<: *logging
     image: grafana/grafana:latest
     volumes:
       - grafana_data:/var/lib/grafana
@@ -25,3 +18,5 @@ services:
     restart: unless-stopped
     ports:
       - 3000:3000
+    labels:
+      - promtail.logs=true

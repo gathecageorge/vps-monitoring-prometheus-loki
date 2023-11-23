@@ -1,0 +1,4 @@
+- labels:
+    instance: myapp
+  targets:
+  - localhost:APP_PORT

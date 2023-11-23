@@ -19,15 +19,24 @@ scrape_configs:
        - source_labels: [__meta_docker_container_label_metrics_scrape]
          regex: true
          action: keep
+
        - source_labels: [__meta_docker_container_label_com_docker_compose_service]
          target_label: job
+
+       - source_labels: [__meta_docker_container_name]
+         regex: /(.*)
+         replacement: $1
+         target_label: container_name
+
        - source_labels: [__meta_docker_container_label_com_docker_compose_project]
          target_label: project
+
        - action: replace
          regex: (.+)
          source_labels:
          - __meta_docker_container_label_metrics_path
          target_label: __metrics_path__
+         
        - action: replace
          regex: ([^:]+)(?::\d+)?;(\d+)
          replacement: $1:$2

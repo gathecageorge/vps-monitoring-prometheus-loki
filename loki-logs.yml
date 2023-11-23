@@ -3,15 +3,8 @@ version: '3'
 volumes:
   loki_data: {}
 
-x-logging: &logging
-  logging:
-    driver: 'json-file'
-    options: 
-      tag: '{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}'
-
 services:
   loki:
-    <<: *logging
     image: grafana/loki:latest
     volumes:
       - loki_data:/tmp
@@ -20,6 +13,7 @@ services:
       - '--config.file=/etc/loki/loki.yml'
     restart: unless-stopped
     labels:
+      - promtail.logs=true
       - metrics.scrape=true
       - metrics.path=/metrics
       - metrics.port=3100

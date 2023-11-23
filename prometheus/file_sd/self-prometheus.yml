@@ -1,4 +1,0 @@
-- labels:
-    instance: prometheus
-  targets:
-  - localhost:9090
