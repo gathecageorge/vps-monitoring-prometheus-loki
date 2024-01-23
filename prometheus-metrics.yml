@@ -26,7 +26,7 @@ services:
 
   cadvisor:
     restart: unless-stopped
-    image: gcr.io/cadvisor/cadvisor
+    image: gcr.io/cadvisor/cadvisor:v0.47.2
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /:/rootfs:ro
@@ -54,7 +54,7 @@ services:
     restart: unless-stopped
     depends_on:
       - node-exporter
-      - cadvisor
+      # - cadvisor
     labels:
       - promtail.logs=true
       - metrics.scrape=true
