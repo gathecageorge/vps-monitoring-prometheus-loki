@@ -45,3 +45,9 @@ scrape_configs:
          - __meta_docker_container_label_metrics_port
          target_label: __address__
 
+       - action: replace  # Optional: Sets Prometheus 'instance' label using metrics.instance, otherwise uses IP:PORT
+         regex: (.+)
+         source_labels:
+          - __meta_docker_container_label_metrics_instance
+         target_label: instance
+

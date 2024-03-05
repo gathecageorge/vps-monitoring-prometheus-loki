@@ -28,17 +28,21 @@ If you want to access portainer using ssl, you need to modify port exposed to `9
 
 ## NOTE
 
-Promtail uses docker daemon to pick up logs for containers with label "promtail.logs = true".
+Promtail and prometheus uses docker daemon to pick up logs/metrics for containers with label "promtail.logs=true" or "metrics.scrape=true".
 
 Example when using docker compose:
 
 ```yaml
 services:
-  grafana:
+  node-exporter:
+    image: prom/node-exporter:latest
     labels:
       - promtail.logs=true
-    image: grafana/grafana:latest
-    container_name: grafana
+
+      - metrics.scrape=true
+      - metrics.path=/metrics
+      - metrics.port=9100
+      - metrics.instance=node-exporter
     #.........other options for the service
 ```
 

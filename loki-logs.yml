@@ -17,3 +17,4 @@ services:
       - metrics.scrape=true
       - metrics.path=/metrics
       - metrics.port=3100
+      - metrics.instance=loki

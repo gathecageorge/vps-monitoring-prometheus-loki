@@ -23,6 +23,7 @@ services:
       - metrics.scrape=true
       - metrics.path=/metrics
       - metrics.port=9100
+      - metrics.instance=node-exporter
 
   cadvisor:
     restart: unless-stopped
@@ -40,6 +41,7 @@ services:
       - metrics.scrape=true
       - metrics.path=/metrics
       - metrics.port=8080
+      - metrics.instance=cadvisor
 
   prometheus:
     image: prom/prometheus:latest
@@ -52,11 +54,9 @@ services:
     entrypoint: sh /etc/prometheus/entrypoint.sh
     command: ["/bin/prometheus"]
     restart: unless-stopped
-    depends_on:
-      - node-exporter
-      # - cadvisor
     labels:
       - promtail.logs=true
       - metrics.scrape=true
       - metrics.path=/metrics
       - metrics.port=9090
+      - metrics.instance=prometheus

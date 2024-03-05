@@ -22,3 +22,4 @@ services:
       - metrics.scrape=true
       - metrics.path=/metrics
       - metrics.port=9080
+      - metrics.instance=promtail
